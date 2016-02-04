@@ -39,18 +39,19 @@ import datetime
 
 
 class CharField(fields.CharField):
+
     def __init__(self, *args, **kwargs):
         defaults = {'max_length': 200}
         defaults.update(kwargs)
         super(CharField, self).__init__(*args, **defaults)
 
+
     def from_ldap(self, value, connection):
+
         if len(value) == 0:
             return ''
-        elif six.PY2:
-            return value[0].decode(connection.charset)
         else:
-            return value[0]
+            return value[0].decode(connection.charset)
 
     def get_db_prep_lookup(self, lookup_type, value, connection,
                            prepared=False):
@@ -69,15 +70,15 @@ class CharField(fields.CharField):
         raise TypeError("CharField has invalid lookup: %s" % lookup_type)
 
     def get_db_prep_save(self, value, connection):
+
         if not value:
             return None
-        elif six.PY2:
-            return [value.encode(connection.charset)]
         else:
-            return [value]
+            return [value.encode(connection.charset)]
 
     def get_prep_lookup(self, lookup_type, value):
         "Perform preliminary non-db specific lookup checks and conversions"
+
         if lookup_type == 'endswith':
             return "*%s" % escape_ldap_filter(value)
         elif lookup_type == 'startswith':
@@ -129,7 +130,7 @@ class IntegerField(fields.IntegerField):
     def get_db_prep_save(self, value, connection):
         if value is None:
             return None
-        return [str(value)]
+        return [str(value).encode(connection.charset)]
 
     def get_prep_lookup(self, lookup_type, value):
         "Perform preliminary non-db specific lookup checks and conversions"
@@ -153,7 +154,7 @@ class FloatField(fields.FloatField):
     def get_db_prep_save(self, value, connection):
         if value is None:
             return None
-        return [str(value)]
+        return [str(value).encode(connection.charset)]
 
     def get_prep_lookup(self, lookup_type, value):
         "Perform preliminary non-db specific lookup checks and conversions"
@@ -166,10 +167,7 @@ class ListField(fields.Field):
     __metaclass__ = SubfieldBase
 
     def from_ldap(self, value, connection):
-        if six.PY2:
-            return [x.decode(connection.charset) for x in value]
-        else:
-            return value
+        return [x.decode(connection.charset) for x in value]
 
     def get_db_prep_lookup(self, lookup_type, value, connection,
                            prepared=False):
@@ -179,10 +177,8 @@ class ListField(fields.Field):
     def get_db_prep_save(self, value, connection):
         if not value:
             return None
-        elif six.PY2:
-            return [x.encode(connection.charset) for x in value]
         else:
-            return value
+            return [x.encode(connection.charset) for x in value]
 
     def get_prep_lookup(self, lookup_type, value):
         "Perform preliminary non-db specific lookup checks and conversions"
