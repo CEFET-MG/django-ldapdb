@@ -57,7 +57,8 @@ class Model(django.db.models.base.Model):
     def __init__(self, *args, **kwargs):
         super(Model, self).__init__(*args, **kwargs)
         self.saved_pk = self.pk
-
+        if self.dn:
+            self.base_dn = self.dn.split(',', 1)[1]
     def build_rdn(self):
         """
         Build the Relative Distinguished Name for this entry.
