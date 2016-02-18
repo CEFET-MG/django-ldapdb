@@ -31,7 +31,7 @@
 #
 
 from django.contrib import admin
-from examples.models import LdapGroup, LdapUser
+from examples.models import LdapGroup, LdapUser, LdapOrganizacao
 
 
 class LdapGroupAdmin(admin.ModelAdmin):
@@ -45,5 +45,9 @@ class LdapUserAdmin(admin.ModelAdmin):
     list_display = ['username', 'first_name', 'last_name', 'email', 'uid']
     search_fields = ['first_name', 'last_name', 'full_name', 'username']
 
+class LdapOrganizacaoAdmin(admin.ModelAdmin):
+    exclude = ['dn']
+
 admin.site.register(LdapGroup, LdapGroupAdmin)
 admin.site.register(LdapUser, LdapUserAdmin)
+admin.site.register(LdapOrganizacao, LdapOrganizacaoAdmin)

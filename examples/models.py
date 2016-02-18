@@ -40,7 +40,7 @@ class LdapUser(ldapdb.models.Model):
     Class for representing an LDAP user entry.
     """
     # LDAP meta-data
-    base_dn = "ou=people,dc=nodomain"
+    base_dn = "ou=people,dc=cefetmg,dc=br"
     object_classes = ['posixAccount', 'shadowAccount', 'inetOrgPerson']
 
     # inetOrgPerson
@@ -76,7 +76,7 @@ class LdapGroup(ldapdb.models.Model):
     Class for representing an LDAP group entry.
     """
     # LDAP meta-data
-    base_dn = "ou=groups,dc=nodomain"
+    base_dn = "ou=groups,dc=cefetmg,dc=br"
     object_classes = ['posixGroup']
 
     # posixGroup attributes
@@ -89,3 +89,26 @@ class LdapGroup(ldapdb.models.Model):
 
     def __unicode__(self):
         return self.name
+
+class LdapOrganizacao(ldapdb.models.Model):
+    """
+    Class for representing an LDAP organization entry.
+    """
+    # LDAP meta-data
+    base_dn = "dc=cefetmg,dc=br"
+    object_classes = ['organization', 'dcObject']
+
+    # organizationalUnit attributes
+    name = CharField(db_column='o', max_length=200)
+    dc =  CharField(db_column='dc', max_length=200, primary_key=True)
+
+    def __str__(self):
+        return str(self.dc)
+
+    def __unicode__(self):
+        return self.name
+
+    def setParent(self, parent):
+        if parent:
+            self.base_dn=parent+','+self.base_dn
+
