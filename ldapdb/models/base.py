@@ -137,16 +137,19 @@ class Model(django.db.models.base.Model):
                         modlist.append((ldap.MOD_DELETE, field.db_column,
                                         None))
 
-            if len(modlist):
-                # handle renaming
-                new_dn = self.build_dn()
-                if new_dn != self.dn:
+            new_dn = self.build_dn()
+            if new_dn != self.dn:
                     logger.debug("Renaming LDAP entry %s to %s" % (self.dn,
                                                                    new_dn))
-                    connection.rename_s(self.dn, self.build_rdn())
+                    oldParent=self.dn.split(',', 1)[1]
+                    newParent=new_dn.split(',', 1)[1]
+                    if oldParent != newParent:
+                        connection.rename_s(self.dn, self.build_rdn(), newParent)
+                    else:
+                        connection.rename_s(self.dn, self.build_rdn())
                     self.dn = new_dn
 
-                logger.debug("Modifying existing LDAP entry %s" % self.dn)
+            if len(modlist):
                 connection.modify_s(self.dn, modlist)
             else:
                 logger.debug("No changes to be saved to LDAP entry %s" %

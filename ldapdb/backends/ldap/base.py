@@ -173,12 +173,12 @@ class DatabaseWrapper(BaseDatabaseWrapper):
             dn = dn.encode(self.charset)
         return cursor.connection.modify_s(dn, modlist)
 
-    def rename_s(self, dn, newrdn):
+    def rename_s(self, dn, newrdn, newSuperior=None):
         cursor = self._cursor()
         if six.PY2:
             dn = dn.encode(self.charset)
             newrdn = newrdn.encode(self.charset)
-        return cursor.connection.rename_s(dn, newrdn)
+        return cursor.connection.rename_s(dn, newrdn, newSuperior)
 
     def search_s(self, base, scope, filterstr='(objectClass=*)',
                  attrlist=None):
